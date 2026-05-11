@@ -11,13 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $description = trim($_POST['description']);
   $event_date  = $_POST['event_date'];
   $location    = trim($_POST['location']);
+  $banner_image = trim($_POST['banner_image']) ?: null;
 
   // Simpan event
-  $stmt = $pdo->prepare("
-    INSERT INTO events (title, description, event_date, location)
-    VALUES (?, ?, ?, ?)
-  ");
-  $stmt->execute([$title, $description, $event_date, $location]);
+$stmt = $pdo->prepare("
+  INSERT INTO events (title, description, event_date, location, banner_image)
+  VALUES (?, ?, ?, ?, ?)
+");
+$stmt->execute([$title, $description, $event_date, $location, $banner_image]);
   $event_id = $pdo->lastInsertId();
 
   // Simpan jenis tiket (minimal 1)
@@ -72,6 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="mb-3">
         <label class="form-label">Lokasi</label>
         <input type="text" name="location" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">URL Gambar (opsional)</label>
+        <input type="text" name="banner_image" class="form-control" placeholder="https://contoh.com/gambar.jpg">
       </div>
 
       <hr>
