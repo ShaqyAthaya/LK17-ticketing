@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $location    = trim($_POST['location']);
   $banner_image = trim($_POST['banner_image']) ?: null;
 
-  // Simpan event
 $stmt = $pdo->prepare("
   INSERT INTO events (title, description, event_date, location, banner_image)
   VALUES (?, ?, ?, ?, ?)
@@ -21,7 +20,6 @@ $stmt = $pdo->prepare("
 $stmt->execute([$title, $description, $event_date, $location, $banner_image]);
   $event_id = $pdo->lastInsertId();
 
-  // Simpan jenis tiket (minimal 1)
   $nama_tikets  = $_POST['tiket_nama'];
   $harga_tikets = $_POST['tiket_harga'];
   $quota_tikets = $_POST['tiket_quota'];

@@ -34,7 +34,6 @@ $orders = $pdo->query("
 
 <div class="container my-4">
 
-  <!-- Daftar Event -->
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="mb-0">Daftar Event</h5>
     <a href="event_tambah.php" class="btn btn-dark btn-sm">+ Tambah Event</a>
@@ -60,7 +59,7 @@ $orders = $pdo->query("
           </td>
           <td>
             <a href="event_hapus.php?id=<?= $e->id ?>" class="btn btn-danger btn-sm"
-               onclick="return confirm('Hapus event ini?')">Hapus</a>
+              onclick="return confirm('Hapus event ini?')">Hapus</a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -68,7 +67,6 @@ $orders = $pdo->query("
     </table>
   </div>
 
-  <!-- Daftar Pemesan -->
   <h5 class="mb-3">Daftar Pemesan</h5>
   <div class="card shadow-sm">
     <table class="table table-hover mb-0">

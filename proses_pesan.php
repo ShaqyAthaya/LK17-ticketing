@@ -6,29 +6,24 @@ $buyer_name     = trim($_POST['buyer_name'] ?? '');
 $buyer_email    = trim($_POST['buyer_email'] ?? '');
 $quantity       = (int)($_POST['quantity'] ?? 0);
 
-// Validasi input
 if (!$ticket_type_id || !$buyer_name || !$buyer_email || $quantity < 1) {
   die("Data tidak lengkap.");
 }
 
-// Ambil data tiket
 $stmt = $pdo->prepare("SELECT * FROM ticket_types WHERE id = ?");
 $stmt->execute([$ticket_type_id]);
 $tiket = $stmt->fetch();
 
 if (!$tiket) die("Tiket tidak ditemukan.");
 
-// Cek kuota
 $sisa = $tiket->quota - $tiket->sold_count;
 if ($quantity > $sisa) {
   die("Maaf, kuota tidak mencukupi. Sisa tiket: $sisa");
 }
 
-// Hitung total & buat kode booking
 $total        = $tiket->price * $quantity;
 $booking_code = 'TIX-' . strtoupper(substr(uniqid(), -6));
 
-// Simpan ke database dengan transaction
 try {
   $pdo->beginTransaction();
 

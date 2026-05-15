@@ -3,7 +3,6 @@ require 'koneksi.php';
 
 $id = $_GET['id'] ?? 0;
 
-// Ambil data event
 $stmt = $pdo->prepare("SELECT * FROM events WHERE id = ? AND status = 'active'");
 $stmt->execute([$id]);
 $event = $stmt->fetch();
@@ -12,7 +11,6 @@ if (!$event) {
   die("Event tidak ditemukan.");
 }
 
-// Ambil jenis tiket
 $stmt2 = $pdo->prepare("SELECT * FROM ticket_types WHERE event_id = ?");
 $stmt2->execute([$id]);
 $tikets = $stmt2->fetchAll();

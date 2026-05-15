@@ -6,7 +6,7 @@ if (!$kode) die("Kode booking tidak ditemukan.");
 
 $stmt = $pdo->prepare("
   SELECT o.*, tt.name as jenis_tiket, tt.price,
-         e.title as nama_event, e.event_date, e.location
+        e.title as nama_event, e.event_date, e.location
   FROM orders o
   JOIN ticket_types tt ON o.ticket_type_id = tt.id
   JOIN events e ON tt.event_id = e.id

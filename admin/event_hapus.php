@@ -8,8 +8,6 @@ require '../koneksi.php';
 
 $id = $_GET['id'] ?? 0;
 
-// Hapus event (ticket_types & orders ikut terhapus karena ON DELETE CASCADE/RESTRICT)
-// Hapus dulu orders yang terkait, lalu ticket_types, baru events
 $pdo->prepare("
   DELETE o FROM orders o
   JOIN ticket_types tt ON o.ticket_type_id = tt.id
