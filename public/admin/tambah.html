@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tambah Event</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="/app.js"></script>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark px-4">
+  <a class="navbar-brand fw-bold" href="/admin/">⚙️ Admin Panel</a>
+</nav>
+
+<div class="container my-4" style="max-width:600px;">
+  <h5 class="mb-4">Tambah Event Baru</h5>
+  <div id="error"></div>
+  <div class="card shadow-sm p-4">
+    <form id="form">
+      <div class="mb-3">
+        <label class="form-label">Judul Event</label>
+        <input type="text" name="title" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Deskripsi</label>
+        <textarea name="description" class="form-control" rows="3"></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Tanggal & Waktu</label>
+        <input type="datetime-local" name="eventDate" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Lokasi</label>
+        <input type="text" name="location" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">URL Gambar (opsional)</label>
+        <input type="url" name="bannerImage" class="form-control" placeholder="https://contoh.com/gambar.jpg">
+      </div>
+
+      <hr>
+      <h6>Jenis Tiket</h6>
+
+      <div id="tiket-wrapper">
+        <div class="row g-2 mb-2 tiket-row">
+          <div class="col-4"><input type="text" class="form-control t-nama" placeholder="Nama (cth: VIP)" required></div>
+          <div class="col-4"><input type="number" min="0" class="form-control t-harga" placeholder="Harga" required></div>
+          <div class="col-4"><input type="number" min="0" class="form-control t-quota" placeholder="Kuota" required></div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-outline-dark btn-sm mb-3" onclick="tambahTiket()">+ Tambah Jenis Tiket</button>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-dark">Simpan Event</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+api("/api/admin/me").catch(() => (location.href = "/admin/login"));
+
+function tambahTiket() {
+  const row = document.createElement("div");
+  row.className = "row g-2 mb-2 tiket-row";
+  row.innerHTML = `
+    <div class="col-4"><input type="text" class="form-control t-nama" placeholder="Nama"></div>
+    <div class="col-4"><input type="number" min="0" class="form-control t-harga" placeholder="Harga"></div>
+    <div class="col-4"><input type="number" min="0" class="form-control t-quota" placeholder="Kuota"></div>`;
+  document.getElementById("tiket-wrapper").appendChild(row);
+}
+
+document.getElementById("form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const data = Object.fromEntries(new FormData(ev.target));
+  // datetime-local has no timezone; convert using the admin's browser timezone
+  data.eventDate = new Date(data.eventDate).toISOString();
+  data.tickets = [...document.querySelectorAll(".tiket-row")].map((row) => ({
+    name: row.querySelector(".t-nama").value,
+    price: row.querySelector(".t-harga").value,
+    quota: row.querySelector(".t-quota").value,
+  }));
+  try {
+    await api("/api/admin/events", { method: "POST", body: JSON.stringify(data) });
+    location.href = "/admin/";
+  } catch (err) {
+    if (err.status === 401) location.href = "/admin/login";
+    else showError(document.getElementById("error"), err.message);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Form Pemesanan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="/app.js"></script>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark px-4">
+  <a class="navbar-brand fw-bold" href="/">🎟️ Ticketing Event</a>
+</nav>
+
+<div class="container my-5">
+  <div class="card shadow-sm p-4" style="max-width:500px;margin:auto;" id="content">
+    <p class="text-muted mb-0">Memuat...</p>
+  </div>
+</div>
+
+<script>
+const tiketId = new URLSearchParams(location.search).get("tiket") || "0";
+const content = document.getElementById("content");
+api("/api/tickets/" + encodeURIComponent(tiketId)).then((t) => {
+  const sisa = t.quota - t.soldCount;
+  content.innerHTML = `
+    <h5 class="mb-1">Form Pemesanan</h5>
+    <p class="text-muted small mb-3">${esc(t.eventTitle)} — ${esc(t.name)}</p>
+    <div class="alert alert-secondary small">
+      💰 Harga: <strong>${rupiah(t.price)}</strong> per tiket &nbsp;|&nbsp;
+      Sisa: <strong>${sisa}</strong> tiket
+    </div>
+    <div id="error"></div>
+    <form id="form">
+      <div class="mb-3">
+        <label class="form-label">Nama Lengkap</label>
+        <input type="text" name="buyerName" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="buyerEmail" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Jumlah Tiket</label>
+        <input type="number" name="quantity" class="form-control" min="1" max="${sisa}" value="1" required>
+      </div>
+      <button type="submit" class="btn btn-dark w-100" ${sisa <= 0 ? "disabled" : ""}>Pesan Sekarang</button>
+    </form>`;
+
+  document.getElementById("form").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const btn = ev.target.querySelector("button");
+    btn.disabled = true;
+    const data = Object.fromEntries(new FormData(ev.target));
+    try {
+      const { bookingCode } = await api("/api/orders", {
+        method: "POST",
+        body: JSON.stringify({ ...data, ticketTypeId: t.id }),
+      });
+      location.href = "/sukses?kode=" + encodeURIComponent(bookingCode);
+    } catch (err) {
+      showError(document.getElementById("error"), err.message);
+      btn.disabled = false;
+    }
+  });
+}).catch((err) => showError(content, err.message));
+</script>
+</body>
+</html>
