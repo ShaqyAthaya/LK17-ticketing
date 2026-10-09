@@ -1,0 +1,32 @@
+[build]
+  publish = "public"
+
+# Old PHP links keep working
+[[redirects]]
+  from = "/index.php"
+  to = "/"
+  status = 301
+[[redirects]]
+  from = "/detail.php"
+  to = "/detail"
+  status = 301
+[[redirects]]
+  from = "/pesan.php"
+  to = "/pesan"
+  status = 301
+[[redirects]]
+  from = "/sukses.php"
+  to = "/sukses"
+  status = 301
+[[redirects]]
+  from = "/admin/login.php"
+  to = "/admin/login"
+  status = 301
+[[redirects]]
+  from = "/admin/dashboard.php"
+  to = "/admin/"
+  status = 301
+[[redirects]]
+  from = "/admin/event_tambah.php"
+  to = "/admin/tambah"
+  status = 301

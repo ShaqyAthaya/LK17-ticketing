@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detail Event</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="/app.js"></script>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-dark px-4">
+  <a class="navbar-brand fw-bold" href="/">🎟️ Ticketing Event</a>
+</nav>
+
+<div class="container my-5" id="content"><p class="text-muted">Memuat...</p></div>
+
+<script>
+const id = new URLSearchParams(location.search).get("id") || "0";
+const content = document.getElementById("content");
+api("/api/events/" + encodeURIComponent(id)).then((event) => {
+  document.title = event.title;
+  const tickets = event.tickets.map((t) => {
+    const sisa = t.quota - t.soldCount;
+    return `
+      <div class="col-md-4">
+        <div class="card border ${sisa <= 0 ? "border-danger" : "border-dark"}">
+          <div class="card-body">
+            <h6 class="fw-bold">${esc(t.name)}</h6>
+            <p class="mb-1">${rupiah(t.price)}</p>
+            <p class="small text-muted">Sisa: ${sisa} tiket</p>
+            ${sisa > 0
+              ? `<a href="/pesan?tiket=${t.id}" class="btn btn-dark btn-sm w-100">Beli</a>`
+              : `<button class="btn btn-danger btn-sm w-100" disabled>Habis</button>`}
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+  content.innerHTML = `
+    <div class="card shadow-sm p-4">
+      <h3>${esc(event.title)}</h3>
+      <p class="text-muted">📅 ${tanggal(event.eventDate)}</p>
+      <p class="text-muted">📍 ${esc(event.location)}</p>
+      <p style="white-space:pre-line">${esc(event.description)}</p>
+      <hr>
+      <h5>Pilih Jenis Tiket</h5>
+      <div class="row g-3 mt-1">${tickets || '<p class="text-muted">Belum ada tiket.</p>'}</div>
+    </div>`;
+}).catch((err) => showError(content, err.message));
+</script>
+</body>
+</html>
